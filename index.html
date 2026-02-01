@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Life Converter</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 20px; }
+        .card { background: #1e293b; border-radius: 15px; padding: 20px; max-width: 400px; margin: auto; box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
+        input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; font-size: 1.1em; }
+        .result-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #334155; }
+        .icon { font-size: 1.5em; }
+        #ad-space { margin-top: 20px; min-height: 90px; background: #334155; border-radius: 8px; }
+        h1 { color: #38bdf8; }
+    </style>
+</head>
+<body>
+
+    <h1>Crypto Life 🍕</h1>
+    <p>What can you buy for your crypto today?</p>
+
+    <div class="card">
+        <input type="number" id="btcInput" placeholder="Enter Bitcoin amount (BTC)" step="0.00001">
+        
+        <div id="results">
+            <div class="result-item"><span class="icon">☕</span> <span>Cups of Coffee:</span> <b id="coffee">0</b></div>
+            <div class="result-item"><span class="icon">🍔</span> <span>Big Macs:</span> <b id="burgers">0</b></div>
+            <div class="result-item"><span class="icon">📱</span> <span>iPhone 15s:</span> <b id="iphone">0</b></div>
+            <div class="result-item"><span class="icon">🚗</span> <span>Tesla Model 3:</span> <b id="tesla">0</b></div>
+        </div>
+
+        <div id="ad-space">
+            </div>
+    </div>
+
+    <script>
+        const btcInput = document.getElementById('btcInput');
+        
+        // Ціни в USD (приблизні для прикладу)
+        const prices = { coffee: 5, burger: 6, iphone: 800, tesla: 40000 };
+
+        async function updatePrices() {
+            try {
+                const response = await fetch('https://api.coindesk.com/v1/bpi/currentprice.json');
+                const data = await response.json();
+                const btcPrice = data.bpi.USD.rate_float;
+                
+                let btc = parseFloat(btcInput.value) || 0;
+                let usd = btc * btcPrice;
+
+                document.getElementById('coffee').innerText = Math.floor(usd / prices.coffee).toLocaleString();
+                document.getElementById('burgers').innerText = Math.floor(usd / prices.burger).toLocaleString();
+                document.getElementById('iphone').innerText = (usd / prices.iphone).toFixed(2);
+                document.getElementById('tesla').innerText = (usd / prices.tesla).toFixed(4);
+            } catch (e) { console.log("Price fetch error"); }
+        }
+
+        btcInput.addEventListener('input', updatePrices);
+        setInterval(updatePrices, 60000); // Оновлювати курс раз на хвилину
+    </script>
+</body>
+</html>
